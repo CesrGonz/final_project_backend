@@ -22,8 +22,6 @@ model User {
   
   //FK
   buy        buy[]
-
-  
 }
 
 model Product {
