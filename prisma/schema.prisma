@@ -20,16 +20,18 @@ model User {
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt  
   
-  offers    Offer[]
-  rates     Rate[]
+  //FK
+  buy        buy[]
+
+  
 }
 
-model Offer {
+model Product {
   id            Int   @id   @default(autoincrement())
   title         String
   description   String?
   active        Boolean   @default(true)
-  contactEmail  String?
+  provider  Int
   location      String? 
   published     DateTime @default(now()) // iso8601
   expired       DateTime  // iso8601
@@ -38,35 +40,42 @@ model Offer {
   updatedAt     DateTime  @updatedAt   
 
   //FK
-  idCategory    Int?
-  category      Category? @relation(fields: [idCategory], references: [id])
+  idProvider   Int
+  Provider      Provider? @relation(fields: [idProvider], references: [Provid])
 
-  idUserCreator Int
-  userCreator   User  @relation(fields: [idUserCreator], references: [id])
+  //FK
+  buy           buy[]
 
-  rates   Rate[]
+  
 }
 
-model Category{
-  id            Int   @id   @default(autoincrement())
+model Provider{
+  Provid          Int   @id   @default(autoincrement())
   name          String @unique
-
+  description   String?
+  direction     String?
+  phone         String?
+  email         String?
+  active        Boolean   @default(true)
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt   
 
-  offers       Offer[]
+  //FK
+  products      Product[]
+       
 }
 
-model Rate{
-  idUser  Int
-  idOffer Int
-  value   Int  
-
+model buy {
+  id            Int   @id   @default(autoincrement())
+  idProduct     Int
+  idUser        Int
+  quantity      Int
+  price         Float
+  total         Float
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt   
 
-  user  User  @relation(fields: [idUser], references: [id])
-  offer  Offer  @relation(fields: [idOffer], references: [id])
-
-  @@id([idUser, idOffer])
+  //FK
+  product       Product? @relation(fields: [idProduct], references: [id])
+  user          User? @relation(fields: [idUser], references: [id])
 }
