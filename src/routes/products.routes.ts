@@ -1,7 +1,10 @@
 import { Router } from "express";
-import {AuthController} from '../controllers/auth.controller'
-import { loginValidation, registerValidation } from "../middlewares/validators.middleware";
-import { ValidationMiddleware } from "../middlewares/validation.middleware";
+import {AuthController} from '../controlers/auth.controller'
+import { loginValidation, registerValidation } from "../middlewares/validators.middlewares";
+import { ValidationMiddleware } from "../middlewares/validation.middlewares";
+import { ProductController } from "../controlers/products.controller";
+import { isAuthenticated } from "@/middlewares/auth.middlewares";
+import { isAdmin } from "@/middlewares/isAdmin.middlewares";
 const router = Router()
 
 /* 
@@ -20,5 +23,17 @@ router.post('/:id/rate/',OffertController.rate)
 router.get('/:id/rate/', OffertController.getRate)
 
  */
+
+
+router.get('/', isAuthenticated, ProductController.getAll)
+
+router.get('/:id', ProductController.getById)
+
+router.post('/', ProductController.create)
+
+router.delete('/:id',isAuthenticated, isAdmin, ProductController.delete)
+
+router.put('/:id',isAuthenticated, isAdmin, ProductController.update)
+
 
 export default router
