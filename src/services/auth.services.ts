@@ -29,24 +29,24 @@ export class AuthService {
     });
   }
 
-  static async login(email: string, password: string) {
+  static async login(email: string, password: string): Promise<{ token: string, user: User }> {
     // Verificar si el usuario existe
-    const findUser = await prisma.user.findUnique({ where: { email } });
-    if (!findUser) throw new HttpException(401, 'Invalid user or password');
+    const user = await prisma.user.findUnique({ where: { email } });
+    if (!user) throw new HttpException(401, 'Invalid user');
 
     // Verificar si el password coincide
-    const isPasswordCorrect = await bcrypt.compare(password, findUser.password);
+    const isPasswordCorrect = await bcrypt.compare(password, user.password);
     if (!isPasswordCorrect) throw new HttpException(401, 'Invalid user or password');
 
     // Generar el token de autenticación
     const token = jwt.sign(
-      { colorFavorito: 'azul', id: findUser.id, email: findUser.email, role: findUser.role, name: findUser.name},	// Payload
+      { colorFavorito: 'azul', id: user.id, email: user.email, role: user.role, name: user.name},	// Payload
       tokenPassword,
       { expiresIn: "1h" }
     );
 
     // Devolver el token y el usuario
-    return { token, user: {  name: findUser.name ,id: findUser.id, email: findUser.email, role: findUser.role } };
+    return { token, user };
 
   }
 }

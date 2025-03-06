@@ -11,34 +11,15 @@ export class ProductService {
   }
 
   // localhost:3000/api/offer/?title=dam
-  static async getAll(title: string = "") {
-    /*  return await prisma.offer.findMany({
-            where: title ? {
-                title: {
-                    contains: title
-                }
-            } : {},
-            orderBy: {
-                createdAt: 'desc'
-            },
-            take: 100
-        }) */
-
+  static async getAll() {
     return await prisma.product.findMany({
-      where: {
-        ...(title && {
-          title: {
-            contains: title,
-            //mode: "insensitive" // Búsqueda sin distinción entre mayúsculas y minúsculas
-          },
-        }),
-      },
       orderBy: {
         createdAt: "desc",
       },
       take: 100,
     });
   }
+
 
   static async create(productData: Product, idProvider: number) {
     try {

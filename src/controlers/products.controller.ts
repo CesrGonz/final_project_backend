@@ -24,7 +24,7 @@ export class ProductController{
         try{
             //localhost:3000/offer?title=XXXXXX
             const { title } = req.query;
-            const user = await ProductService.getAll(title as string)
+            const user = await ProductService.getAll()
             res.status(200).json(user)
         }catch(error){
             next(error)

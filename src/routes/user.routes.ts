@@ -8,7 +8,5 @@ const router = Router()
 
 "api/users/"
 router.get('/profile', isAuthenticated ,UserController.profile)
-router.get('/', isAuthenticated, isAdmin ,UserController.profile)
-
-
+router.get('/', UserController.getAll)
 export default router

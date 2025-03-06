@@ -5,7 +5,7 @@ import jwt from "jsonwebtoken";
 const TOKEN_PASSWORD = process.env.TOKEN_PASSWORD || "default_secret";
 
 export class AuthController {
-  static async register(req: Request, res: Response, next: NextFunction) {
+  static async register(req: Request, res: Response) {
     try {
       const userData = req.body;
       console.log(userData);
@@ -28,35 +28,36 @@ export class AuthController {
 
   static async login(req: Request, res: Response, next: NextFunction) {
     try {
-      const userData = req.body;
-      console.log('looo', userData.email, userData.password);
-      const { token, user } = await AuthService.login(userData.email, userData.password);
-      console.log(token, user);
+        const userData = req.body
+        console.log('looo',userData.email, userData.password)
+        const { token, user } = await AuthService.login(userData.email, userData.password)
+        //TODO inyectar cookie al cliente
+        console.log(token, user)
 
-      const validSameSiteValues = ["none", "lax", "strict"] as const;
-      const sameSiteValue: "none" | "lax" | "strict" = validSameSiteValues.includes(process.env.COOKIE_SAME_SITE as "none" | "lax" | "strict")
+        const validSameSiteValues = ["none", "lax", "strict"] as const; // Valores permitidos
+
+        const sameSiteValue: "none" | "lax" | "strict" = validSameSiteValues.includes(process.env.COOKIE_SAME_SITE as "none" | "lax" | "strict")
         ? (process.env.COOKIE_SAME_SITE as "none" | "lax" | "strict")
-        : "none";
+        : "none"; // Si no es válido, usa "none" por defecto
 
-      // Configurar la cookie antes de enviar la respuesta
-      res.cookie('token', token, {
-        maxAge: 60 * 60 * 1000 * 3,
-        httpOnly: true,
-        secure: process.env.COOKIE_SECURE ? process.env.COOKIE_SECURE === "true" : true,
-        sameSite: sameSiteValue,
-      });
 
-      // Enviar la respuesta
-     res.status(200).json({ message: 'Login successfully:', user });
+        res.cookie('token', token, {
+            maxAge: 60 * 60 * 1000 * 3, // 3 horas de caducidad
+            httpOnly: true, // no se puede accerder mediante js
+            secure: process.env.COOKIE_SECURE ? process.env.COOKIE_SECURE === "true" : true,// solo se envia si usas https
+            sameSite: sameSiteValue, // Evita ataques CSRF
+
+        })
+        res.status(201).json({ message: 'Login successfully:', token })
     } catch (error) {
-      next(error);
+        next(error)
     }
-  }
+}
 
-  static async logout(req: Request, res: Response, next: NextFunction) {
+  static async logout(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       res.clearCookie('token');
-      return res.status(204).json({ message: 'Logout successfully:' });
+      res.status(200).json({ message: 'Logout successfully:' });
     } catch (error) {
       next(error);
     }

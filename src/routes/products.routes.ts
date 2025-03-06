@@ -1,6 +1,6 @@
 import { Router } from "express";
 import {AuthController} from '../controlers/auth.controller'
-import { loginValidation, registerValidation } from "../middlewares/validators.middlewares";
+import { loginValidation, productValidation, registerValidation } from "../middlewares/validators.middlewares";
 import { ValidationMiddleware } from "../middlewares/validation.middlewares";
 import { ProductController } from "../controlers/products.controller";
 import { isAuthenticated } from "@/middlewares/auth.middlewares";
@@ -29,11 +29,11 @@ router.get('/', isAuthenticated, ProductController.getAll)
 
 router.get('/:id', ProductController.getById)
 
-router.post('/', ProductController.create)
+router.post('/',productValidation, ProductController.create)
 
-router.delete('/:id',isAuthenticated, isAdmin, ProductController.delete)
+router.delete('/:id', ProductController.delete)
 
-router.put('/:id',isAuthenticated, isAdmin, ProductController.update)
+router.put('/:id', ProductController.update)
 
 
 export default router
